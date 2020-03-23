@@ -33,15 +33,30 @@
         <p>
     </div>
 
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1">Countries to compare</span>
+    <div class="card">
+        <div class="card-header">
+            Countries to compare
         </div>
-        <input type="text" id="countries" value="Korea, South; Germany; Italy; China" class="form-control">
-        <div class="input-group-append">
-            <input type="button" value="Apply" onclick="refresh()" class="btn btn-primary">
+        <ul class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="?reload=1#Korea, South; Germany; US; China">
+                Korea, South; Germany; US; China
+            </a>
+            <a class="list-group-item list-group-item-action" href="?reload=2#Italy; Spain; France; China">
+                Italy; Spain; France; China
+            </a>
+        </ul>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Custom</span>
+            </div>
+            <input type="text" id="countries" value="Korea, South; Germany; US; China" class="form-control">
+            <div class="input-group-append">
+                <input type="button" value="Apply" onclick="refresh()" class="btn btn-primary">
+            </div>
         </div>
     </div>
+
+
     <div class="card mt-3">
         <div class="card-body">
             <canvas id="confirmed"></canvas>
@@ -272,7 +287,7 @@
             fetch("https://pomber.github.io/covid19/timeseries.json")
                 .then(response => { return response.json() })
                 .then(data => {
-                    var fill = !Object.keys(charts).length
+                    var initial = !Object.keys(charts).length
 
                     for (var c of countries) {
                         if (!(c in data))
@@ -286,11 +301,11 @@
                         return
                     }
 
-                    if (!fill)
+                    if (!initial)
                         window.location.hash = "#" + encodeURI(countries_str)
 
                     var cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.data.datasets = getDatasets(data, getDays, countries, fill)
+                    cconfig.data.datasets = getDatasets(data, getDays, countries, false)
                     cconfig.data.labels = labels
                     makeChart("confirmed", cconfig)
 
@@ -319,7 +334,7 @@
                     cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Corona infected comparison'
                     cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed - recovered - dead"
-                    cconfig.data.datasets = getDatasets(data, getInfected, countries, fill)
+                    cconfig.data.datasets = getDatasets(data, getInfected, countries, false)
                     cconfig.data.labels = labels
                     makeChart("recovery", cconfig)
                 }
