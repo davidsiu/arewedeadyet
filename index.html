@@ -409,7 +409,7 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams?.get('countries')) {
+        if (urlParams.get('countries')) {
             document.getElementById('countries').value = urlParams.get('countries')
             charts["_dummy"] = 1 // force non-filled style
         }
