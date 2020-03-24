@@ -5,10 +5,11 @@
 # Changelog
 - Default to Darkmode
 - Better default searches
+- Added a TOC
+- Added Num Fatalities / Time
 
 
 # Roadmap
 - Real-time data
-- Num Fatalities / Time
 - State Level graphs
 - Projections - Curve fitting
