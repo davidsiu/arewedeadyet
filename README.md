@@ -1,5 +1,5 @@
 # arewedeadyet
-Chart for comparing the corona epidemic between different countries
+- Chart for comparing the corona epidemic between different countries
 
 
 # Changelog
@@ -9,4 +9,6 @@ Chart for comparing the corona epidemic between different countries
 
 # Roadmap
 - Real-time data
-- # Fatalities / Time
+- Num Fatalities / Time
+- State Level graphs
+- Projections - Curve fitting
