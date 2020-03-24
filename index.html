@@ -13,43 +13,50 @@
             height: 30em;
             max-height: 30em;
         }
+
+        html {
+            background: #1d1d1d !important;
+        }
+        
+        body {
+            background-color: #1d1d1d;
+            color: #ffffff;
+        }
+
+        .card, .form-control, .list-group-item, .jumbotron{
+            background-color: #353333;
+            color: #ffffff;
+        }
+
+
+
     </style>
 </head>
 
 <body class="container">
-    <div class="jumbotron">
-        <p class="lead">
-            I am quite frustrated with corona graphs in the news, since most reporters seem to have skipped math classes
-            back
-            then.
-            For instance, just plotting the number of confirmed infections at the respective dates does not tell you
-            anything
-            due to the different time point of outbreak. So lets fix that first.
-        </p>
-        <hr>
-        <p>The following charts are based on live data from <a
-                href="https://github.com/pomber/covid19">https://github.com/pomber/covid19</a>, which in turn sources <a
-                href="https://coronavirus.jhu.edu/map.html">jhu.edu</a>.</p>
-        <p>
-    </div>
+
+    <br>
 
     <div class="card">
         <div class="card-header">
             Countries to compare
         </div>
         <ul class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="?reload=1#Korea, South; China; Italy; US; Spain">
+                Korea, South; China; Italy; US; Spain
+            </a>
             <a class="list-group-item list-group-item-action" href="?reload=1#Korea, South; Germany; US; China">
                 Korea, South; Germany; US; China
             </a>
-            <a class="list-group-item list-group-item-action" href="?reload=2#Italy; Spain; France; China">
-                Italy; Spain; France; China
+            <a class="list-group-item list-group-item-action" href="?reload=2#China; US; Italy; Spain">
+                China; US; Italy; Spain
             </a>
         </ul>
         <div class="input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">Custom</span>
             </div>
-            <input type="text" id="countries" value="Korea, South; Germany; US; China" class="form-control">
+            <input type="text" id="countries" value="Korea, South; China; Italy; US; Spain" class="form-control">
             <div class="input-group-append">
                 <input type="button" value="Apply" onclick="refresh()" class="btn btn-primary">
             </div>
@@ -141,12 +148,33 @@
             However, a rise of the graph after a decline can indicate that a second wave is coming.
         </div>
     </div>
+
+
     <hr>
-    Source-code: <a href="https://github.com/paroj/arewedeadyet">https://github.com/paroj/arewedeadyet</a><br>
+
+    <div class="jumbotron">
+        <p class="lead">
+            I am quite frustrated with corona graphs in the news, since most reporters seem to have skipped math classes
+            back then.
+            For instance, just plotting the number of confirmed infections at the respective dates does not tell you
+            anything due to the different time point of outbreak. So lets fix that first.
+        </p>
+        <hr>
+        <p>The following charts are based on live data from <a
+                href="https://github.com/pomber/covid19">https://github.com/pomber/covid19</a>, which in turn sources <a
+                href="https://coronavirus.jhu.edu/map.html">jhu.edu</a>.</p>
+        <p>
+    </div>
+
+
+    <hr>
+    Source-code: <a href="https://github.com/davidsiu/arewedeadyet">https://github.com/davidsiu/arewedeadyet</a><br>
+    <hr>
     <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License"
-            style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is
-    licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
-        Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+    style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+
+    <br>
+    <br>
 
     <script src="./population_from_wikipedia.js"></script>
     <script>
@@ -154,6 +182,8 @@
 
         var labels = []
         var days = {}
+
+        Chart.defaults.global.defaultFontColor = 'white';
 
         function getDays(data, country) {
             var confirmed = []
