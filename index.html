@@ -27,9 +27,6 @@
             background-color: #353333;
             color: #ffffff;
         }
-
-
-
     </style>
 </head>
 
@@ -42,14 +39,11 @@
             Countries to compare
         </div>
         <ul class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" href="?reload=1#Korea, South; China; Italy; US; Spain">
+            <a class="list-group-item list-group-item-action" href="?reload=1&countries=Korea, South; China; Italy; US; Spain">
                 Korea, South; China; Italy; US; Spain
             </a>
-            <a class="list-group-item list-group-item-action" href="?reload=1#Korea, South; Germany; US; China">
-                Korea, South; Germany; US; China
-            </a>
-            <a class="list-group-item list-group-item-action" href="?reload=2#China; US; Italy; Spain">
-                China; US; Italy; Spain
+            <a class="list-group-item list-group-item-action" href="?reload=2&countries=Spain; China; Italy; US">
+                Spain; China; Italy; US
             </a>
         </ul>
         <div class="input-group">
@@ -61,6 +55,20 @@
                 <input type="button" value="Apply" onclick="refresh()" class="btn btn-primary">
             </div>
         </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">
+            Table of Contents
+        </div>
+        <ul class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action" href="#confirmed">Confirmed Infections</a>
+            <a class="list-group-item list-group-item-action" href="#rate">Infection Rate</a>
+            <a class="list-group-item list-group-item-action" href="#fatality">Fatality Rate</a>
+            <a class="list-group-item list-group-item-action" href="#fatality-count">Fatality Count</a>
+            <a class="list-group-item list-group-item-action" href="#dead-per-million">Mortality Rate</a>
+            <a class="list-group-item list-group-item-action" href="#recovery">Resolution</a>
+        </ul>
     </div>
 
 
@@ -111,6 +119,19 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            
+            <canvas id="fatality-count"></canvas>
+            <p>
+                
+            </p>
+            <div class="alert alert-primary" role="alert">
+                
+            </div>
+        </div>
     </div>
 
     <div class="card mt-3">
@@ -213,6 +234,15 @@
                 fatality.push((day["deaths"] / day["confirmed"] * 100).toFixed(2))
             }
             return fatality
+        }
+
+        function getFalities(data, country) {
+            var dead = []
+            for (var day of data[country]) {
+                if (day["confirmed"] < 25) continue
+                dead.push((day["deaths"]).toFixed(2))
+            }
+            return dead
         }
 
         function getDeadPerMillion(data, country) {
@@ -355,6 +385,13 @@
                     makeChart("fatality", cconfig)
 
                     cconfig = JSON.parse(JSON.stringify(config))
+                    cconfig.options.title.text = 'Fatality count comparison'
+                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths"
+                    cconfig.data.datasets = getDatasets(data, getFalities, countries, false)
+                    cconfig.data.labels = labels
+                    makeChart("fatality-count", cconfig)
+                    
+                    cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Mortality rate comparison'
                     cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
                     cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
@@ -371,8 +408,9 @@
                 )
         }
 
-        if (window.location.hash) {
-            document.getElementById('countries').value = decodeURI(window.location.hash.substring(1))
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams?.get('countries')) {
+            document.getElementById('countries').value = urlParams.get('countries')
             charts["_dummy"] = 1 // force non-filled style
         }
         refresh()
