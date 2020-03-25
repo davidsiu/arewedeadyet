@@ -125,6 +125,8 @@
             This makes it independant of whether the confirmed count is estimated correctly. In most cases both will be
             correlated.
             <canvas id="dead-per-million"></canvas>
+            <hr>
+            <canvas id="dead-per-million-logarithmic"></canvas>
             <p>
                 However, the mortality rate
                 is a better indicator of the influence of the pandepic on a countries society and economy - especially
@@ -381,6 +383,13 @@
                     cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Mortality rate comparison'
                     cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
+                    cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
+                    cconfig.data.labels = labels
+                    makeChart("dead-per-million", cconfig)
+
+                    cconfig = JSON.parse(JSON.stringify(config))
+                    cconfig.options.title.text = 'Mortality rate comparison (Logarithmic)'
+                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
                     // Extremely sad. We need to go to a log scale because Italy and Spain's Mortality
                     // rate is considerably higher than other countries.
                     cconfig.options.scales.yAxes[0].type = 'logarithmic'
@@ -400,7 +409,7 @@
                     }
                     cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
                     cconfig.data.labels = labels
-                    makeChart("dead-per-million", cconfig)
+                    makeChart("dead-per-million-logarithmic", cconfig)
 
                     cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Corona infected comparison'
