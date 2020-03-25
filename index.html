@@ -381,6 +381,23 @@
                     cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Mortality rate comparison'
                     cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
+                    // Extremely sad. We need to go to a log scale because Italy and Spain's Mortality
+                    // rate is considerably higher than other countries.
+                    cconfig.options.scales.yAxes[0].type = 'logarithmic'
+                    cconfig.options.scales.yAxes[0].ticks = {
+                        min: 0,
+                        max: 1000,
+                        callback: function (value, index, values) {
+                            if (value === 1000000) return "1M";
+                            if (value === 100000) return "100K";
+                            if (value === 10000) return "10K";
+                            if (value === 1000) return "1K";
+                            if (value === 100) return "100";
+                            if (value === 10) return "10";
+                            if (value === 0) return "0";
+                            return null;
+                        }
+                    }
                     cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
                     cconfig.data.labels = labels
                     makeChart("dead-per-million", cconfig)
