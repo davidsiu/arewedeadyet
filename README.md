@@ -7,6 +7,8 @@
 - Better default searches
 - Added a TOC
 - Added Num Fatalities / Time
+- Added Mortality Rate in Logarithmic
+- Added Infection Rate
 
 
 # Roadmap

@@ -52,6 +52,7 @@
             <a class="list-group-item list-group-item-action" href="#fatality">Fatality Rate</a>
             <a class="list-group-item list-group-item-action" href="#fatality-count">Fatality Count</a>
             <a class="list-group-item list-group-item-action" href="#dead-per-million">Mortality Rate</a>
+            <a class="list-group-item list-group-item-action" href="#infection-rate">Infection Rate</a>
             <a class="list-group-item list-group-item-action" href="#recovery">Resolution</a>
         </ul>
     </div>
@@ -139,6 +140,19 @@
             </div>
         </div>
     </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+    
+
+            <canvas id="infection-rate"></canvas>
+
+
+    
+        </div>
+    </div>
+
+
 
     <div class="card mt-3">
         <div class="card-body">
@@ -240,6 +254,17 @@
                 dead.push((day["deaths"] / (population[country] / 1e6)).toFixed(2))
             }
             return dead
+        }
+
+
+        function getInfectionRate(data, country) {
+            var infection = []
+            for (var day of data[country]) {
+                if (day["confirmed"] < 25) continue
+                infection.push((day["confirmed"] / population[country] * 100))
+                // .toFixed(2))
+            }
+            return infection;
         }
 
         function getRate(data, country) {
@@ -410,6 +435,13 @@
                     cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
                     cconfig.data.labels = labels
                     makeChart("dead-per-million-logarithmic", cconfig)
+
+                    cconfig = JSON.parse(JSON.stringify(config))
+                    cconfig.options.title.text = 'Infection rate'
+                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "% of population infected"
+                    cconfig.data.datasets = getDatasets(data, getInfectionRate, countries, false)
+                    cconfig.data.labels = labels
+                    makeChart("infection-rate", cconfig)
 
                     cconfig = JSON.parse(JSON.stringify(config))
                     cconfig.options.title.text = 'Corona infected comparison'
