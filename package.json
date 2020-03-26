@@ -1,0 +1,22 @@
+{
+  "name": "arewedeadyet",
+  "version": "1.0.0",
+  "description": "Are we dead yet?",
+  "main": "index.html",
+  "scripts": {
+    "test": "serve -d -p 8080 -c serve.json ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidsiu/arewedeadyet.git"
+  },
+  "author": "David Siu",
+  "license": "CREATIVE COMMONS ATTRIBUTION-NONCOMMERCIAL 4.0 INTERNATIONAL LICENSE",
+  "bugs": {
+    "url": "https://github.com/davidsiu/arewedeadyet/issues"
+  },
+  "homepage": "https://github.com/davidsiu/arewedeadyet#readme",
+  "dependencies": {
+    "serve": "^11.3.0"
+  }
+}

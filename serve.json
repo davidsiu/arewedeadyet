@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "/arewedeadyet/" }
+  ],
+  "rewrites": [
+    { "source": "/arewedeadyet", "destination": "/index.html" },
+    { "source": "/arewedeadyet/icons/:ico", "destination": "/icons/:ico" }
+
+  ]
+}

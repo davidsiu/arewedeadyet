@@ -1,6 +1,13 @@
 # arewedeadyet
-- Chart for comparing the corona epidemic between different countries
+- Charts for comparing the corona epidemic between different countries
 
+# Installation
+```sh
+# Install node
+$ npm install
+$ npm test
+# Paste url in browser
+```
 
 # Changelog
 - Default to Darkmode
@@ -9,9 +16,11 @@
 - Added Num Fatalities / Time
 - Added Mortality Rate in Logarithmic
 - Added Infection Rate
+- Added App Icons
+- Added serving pages similar to github pages
 
 
 # Roadmap
 - Real-time data
-- State Level graphs
+- State/Region Level graphs
 - Projections - Curve fitting
