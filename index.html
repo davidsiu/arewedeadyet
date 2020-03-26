@@ -40,6 +40,9 @@
             <a class="list-group-item list-group-item-action" href="?reload=1&countries=Korea, South; China; Italy; US; Spain">
                 Korea, South; China; Italy; US; Spain
             </a>
+            <a class="list-group-item list-group-item-action" href="?reload=1&countries=Korea, South; China; Italy; US; Spain; Germany; France; Australia; Iran; Switzerland; United Kingdom; Canada">
+                Korea, South; China; Italy; US; Spain; Germany; France; Australia; Iran; Switzerland; United Kingdom; Canada
+            </a>
             <a class="list-group-item list-group-item-action" href="?reload=2&countries=Spain; China; Italy; US">
                 Spain; China; Italy; US
             </a>
@@ -297,11 +300,28 @@
             return avgd
         }
 
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
         function getDatasets(data, fn, countries, fill) {
-            var colors = ['rgb(255, 132, 255)', 'rgb(255, 99, 132)', 'rgb(99, 255, 132)', 'rgb(99, 132, 255)', 'rgb(132, 255, 255)', 'rgb(255, 255, 132)']
+            var colors = [
+                'rgb(255, 132, 255)',
+                'rgb(255, 99, 132)',
+                'rgb(99, 255, 132)',
+                'rgb(99, 132, 255)',
+                'rgb(132, 255, 255)',
+                'rgb(255, 255, 132)'
+            ]
             var datasets = []
 
             for (var i = 0; i < countries.length; i++) {
+                colors[i] = colors[i] || getRandomColor()
                 datasets.push(
                     {
                         label: countries[i],

@@ -4,6 +4,7 @@
   ],
   "rewrites": [
     { "source": "/arewedeadyet", "destination": "/index.html" },
+    { "source": "/arewedeadyet/:file", "destination": "/:file" },
     { "source": "/arewedeadyet/icons/:ico", "destination": "/icons/:ico" }
 
   ]
