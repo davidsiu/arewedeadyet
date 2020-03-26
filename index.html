@@ -223,7 +223,9 @@
         function getInfected(data, country) {
             var infected = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (day["confirmed"] < 25
+                    || !Number.isInteger(day["deaths"])
+                    || !Number.isInteger(day["recovered"])) continue
                 infected.push(day["confirmed"] - day["deaths"] - day["recovered"])
             }
             return infected
@@ -261,8 +263,8 @@
             var infection = []
             for (var day of data[country]) {
                 if (day["confirmed"] < 25) continue
-                infection.push((day["confirmed"] / population[country] * 100))
-                // .toFixed(2))
+                infection.push((day["confirmed"] / population[country] * 100).toFixed(4))
+
             }
             return infection;
         }
