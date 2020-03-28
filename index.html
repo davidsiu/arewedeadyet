@@ -224,12 +224,17 @@
         Chart.defaults.global.defaultFontColor = 'white';
         Chart.defaults.scale.gridLines.color = "rgba(255,255,255, 0.2)"
 
+        const DAY_ZERO_THRESHOLD = 25
+
+        function beforeDayZero(day) {
+            return day["confirmed"] < DAY_ZERO_THRESHOLD
+        }
+
         function getDays(data, country) {
             var confirmed = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (beforeDayZero(day)) continue
                 confirmed.push(day["confirmed"])
-
                 if (confirmed.length > labels.length) labels.push(labels.length)
             }
             days[country] = confirmed
@@ -239,7 +244,7 @@
         function getInfected(data, country) {
             var infected = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25
+                if (beforeDayZero(day)
                     || !Number.isInteger(day["deaths"])
                     || !Number.isInteger(day["recovered"])) continue
                 infected.push(day["confirmed"] - day["deaths"] - day["recovered"])
@@ -250,7 +255,7 @@
         function getFatalityRate(data, country) {
             var fatality = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (beforeDayZero(day)) continue
                 fatality.push((day["deaths"] / day["confirmed"] * 100).toFixed(2))
             }
             return fatality
@@ -259,7 +264,7 @@
         function getFalities(data, country) {
             var dead = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (beforeDayZero(day)) continue
                 dead.push((day["deaths"]).toFixed(2))
             }
             return dead
@@ -268,7 +273,7 @@
         function getDeadPerMillion(data, country) {
             var dead = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (beforeDayZero(day)) continue
                 dead.push((day["deaths"] / (population[country] / 1e6)).toFixed(2))
             }
             return dead
@@ -278,7 +283,7 @@
         function getInfectionRate(data, country) {
             var infection = []
             for (var day of data[country]) {
-                if (day["confirmed"] < 25) continue
+                if (beforeDayZero(day)) continue
                 infection.push((day["confirmed"] / population[country] * 100).toFixed(4))
 
             }
@@ -363,7 +368,7 @@
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'Days since 25 confirmed'
+                            labelString: `Days since ${DAY_ZERO_THRESHOLD} confirmed`
                         }
                     }],
                     yAxes: [{
@@ -386,106 +391,104 @@
             charts[name] = new Chart(canvas, config)
         }
 
-        function refresh() {
+        async function refresh() {
             var countries_str = document.getElementById('countries').value
             var countries = countries_str.split(";").map(e => e.trim())
 
             var err = ""
 
-            fetch("https://pomber.github.io/covid19/timeseries.json")
-                .then(response => { return response.json() })
-                .then(data => {
-                    var initial = !Object.keys(charts).length
+            var response = await fetch("https://pomber.github.io/covid19/timeseries.json")
+            var data = await response.json()
 
-                    for (var c of countries) {
-                        if (!(c in data))
-                            err += c + " is not a know country name "
-                        if (!(c in population))
-                            err += " population of " + c + " not known"
-                    }
+            var initial = !Object.keys(charts).length
 
-                    if (err) {
-                        alert(err)
-                        return
-                    }
+            for (var c of countries) {
+                if (!(c in data))
+                    err += c + " is not a know country name "
+                if (!(c in population))
+                    err += " population of " + c + " not known"
+            }
 
-                    if (!initial) {
-                        history.pushState(null, "title", "?countries=" + encodeURI(countries_str))
-                    }
+            if (err) {
+                alert(err)
+                return
+            }
 
-                    var cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.data.datasets = getDatasets(data, getDays, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("confirmed", cconfig)
+            if (!initial) {
+                history.pushState(null, "title", "?countries=" + encodeURI(countries_str))
+            }
 
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Corona infection rate comparison'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed today/yesterday"
-                    cconfig.options.scales.yAxes[0].ticks.min = 0.9
-                    cconfig.data.datasets = getDatasets(data, getRate, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("rate", cconfig)
+            var cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.data.datasets = getDatasets(data, getDays, countries, false)
+            cconfig.data.labels = labels
+            makeChart("confirmed", cconfig)
 
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Corona fatality rate comparison'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths/confirmed [%]"
-                    cconfig.data.datasets = getDatasets(data, getFatalityRate, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("fatality", cconfig)
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Corona infection rate comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed today/yesterday"
+            cconfig.options.scales.yAxes[0].ticks.min = 0.9
+            cconfig.data.datasets = getDatasets(data, getRate, countries, false)
+            cconfig.data.labels = labels
+            makeChart("rate", cconfig)
 
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Fatality count comparison'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths"
-                    cconfig.data.datasets = getDatasets(data, getFalities, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("fatality-count", cconfig)
-                    
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Mortality rate comparison'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
-                    cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("dead-per-million", cconfig)
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Corona fatality rate comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths/confirmed [%]"
+            cconfig.data.datasets = getDatasets(data, getFatalityRate, countries, false)
+            cconfig.data.labels = labels
+            makeChart("fatality", cconfig)
 
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Mortality rate comparison (Logarithmic)'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
-                    // Extremely sad. We need to go to a log scale because Italy and Spain's Mortality
-                    // rate is considerably higher than other countries.
-                    cconfig.options.scales.yAxes[0].type = 'logarithmic'
-                    cconfig.options.scales.yAxes[0].ticks = {
-                        min: 0,
-                        max: 1000,
-                        callback: function (value, index, values) {
-                            if (value === 1000000) return "1M";
-                            if (value === 100000) return "100K";
-                            if (value === 10000) return "10K";
-                            if (value === 1000) return "1K";
-                            if (value === 100) return "100";
-                            if (value === 10) return "10";
-                            if (value === 0) return "0";
-                            return null;
-                        }
-                    }
-                    cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("dead-per-million-logarithmic", cconfig)
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Fatality count comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths"
+            cconfig.data.datasets = getDatasets(data, getFalities, countries, false)
+            cconfig.data.labels = labels
+            makeChart("fatality-count", cconfig)
+            
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Mortality rate comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
+            cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
+            cconfig.data.labels = labels
+            makeChart("dead-per-million", cconfig)
 
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Infection rate'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "% of population infected"
-                    cconfig.data.datasets = getDatasets(data, getInfectionRate, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("infection-rate", cconfig)
-
-                    cconfig = JSON.parse(JSON.stringify(config))
-                    cconfig.options.title.text = 'Corona infected comparison'
-                    cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed - recovered - dead"
-                    cconfig.data.datasets = getDatasets(data, getInfected, countries, false)
-                    cconfig.data.labels = labels
-                    makeChart("recovery", cconfig)
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Mortality rate comparison (Logarithmic)'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "deaths per million"
+            // Extremely sad. We need to go to a log scale because Italy and Spain's Mortality
+            // rate is considerably higher than other countries.
+            cconfig.options.scales.yAxes[0].type = 'logarithmic'
+            cconfig.options.scales.yAxes[0].ticks = {
+                min: 0,
+                max: 1000,
+                callback: function (value, index, values) {
+                    if (value === 1000000) return "1M";
+                    if (value === 100000) return "100K";
+                    if (value === 10000) return "10K";
+                    if (value === 1000) return "1K";
+                    if (value === 100) return "100";
+                    if (value === 10) return "10";
+                    if (value === 0) return "0";
+                    return null;
                 }
-                )
+            }
+            cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
+            cconfig.data.labels = labels
+            makeChart("dead-per-million-logarithmic", cconfig)
+
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Infection rate'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "% of population infected"
+            cconfig.data.datasets = getDatasets(data, getInfectionRate, countries, false)
+            cconfig.data.labels = labels
+            makeChart("infection-rate", cconfig)
+
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Corona infected comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed - recovered - dead"
+            cconfig.data.datasets = getDatasets(data, getInfected, countries, false)
+            cconfig.data.labels = labels
+            makeChart("recovery", cconfig)
         }
 
         const urlParams = new URLSearchParams(window.location.search);
