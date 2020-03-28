@@ -1,3 +1,5 @@
+![Node.js CI](https://github.com/davidsiu/arewedeadyet/workflows/Node.js%20CI/badge.svg)
+
 # arewedeadyet
 - Charts for comparing the corona epidemic between different countries
 
