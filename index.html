@@ -69,7 +69,8 @@
             <a class="list-group-item list-group-item-action" href="#fatality-count">Fatality Count</a>
             <a class="list-group-item list-group-item-action" href="#dead-per-million">Mortality Rate</a>
             <a class="list-group-item list-group-item-action" href="#infection-rate">Infection Rate</a>
-            <a class="list-group-item list-group-item-action" href="#recovery">Resolution</a>
+            <a class="list-group-item list-group-item-action" href="#recovery-count">Recovery Count</a>
+            <a class="list-group-item list-group-item-action" href="#resolution">Resolution</a>
         </ul>
     </div>
 
@@ -169,6 +170,18 @@
     </div>
 
 
+    <div class="card mt-3">
+        <div class="card-body">
+            
+            <canvas id="recovery-count"></canvas>
+            <p>
+                
+            </p>
+            <div class="alert alert-primary" role="alert">
+                Raw recovery count over time.
+            </div>
+        </div>
+    </div>
 
     <div class="card mt-3">
         <div class="card-body">
@@ -177,7 +190,7 @@
             recovered nor died yet and are potentially infectious.
             If there are no such cases left, we can assume the epidemic to be stopped.
 
-            <canvas id="recovery"></canvas>
+            <canvas id="resolution"></canvas>
 
 
             Notably, when this graph reaches zero you
@@ -291,6 +304,15 @@
 
             }
             return infection;
+        }
+
+        function getRecoveries(data, country) {
+            var dead = []
+            for (var day of data[country]) {
+                if (beforeDayZero(day)) continue
+                dead.push((day["recovered"]).toFixed(2))
+            }
+            return dead
         }
 
         function getRate(data, country) {
@@ -492,11 +514,18 @@
             makeChart("infection-rate", cconfig)
 
             cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Recovery count comparison'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "recovered"
+            cconfig.data.datasets = getDatasets(data, getRecoveries, countries, false)
+            cconfig.data.labels = labels
+            makeChart("recovery-count", cconfig)
+
+            cconfig = JSON.parse(JSON.stringify(config))
             cconfig.options.title.text = 'Corona infected comparison'
             cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed - recovered - dead"
             cconfig.data.datasets = getDatasets(data, getInfected, countries, false)
             cconfig.data.labels = labels
-            makeChart("recovery", cconfig)
+            makeChart("resolution", cconfig)
 
         }
 
