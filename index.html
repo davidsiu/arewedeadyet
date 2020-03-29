@@ -226,6 +226,7 @@
         Chart.defaults.global.defaultFontColor = 'white';
         Chart.defaults.scale.gridLines.color = "rgba(255,255,255, 0.2)"
 
+
         const DAY_ZERO_THRESHOLD = 25
 
         function beforeDayZero(day) {
@@ -307,6 +308,7 @@
             return avgd
         }
 
+
         function getRandomColor() {
             var letters = '0123456789ABCDEF'.split('');
             var color = '#';
@@ -315,6 +317,8 @@
             }
             return color;
         }
+
+        const countryColor = {};
 
         function getDatasets(data, fn, countries, fill) {
             var colors = [
@@ -328,7 +332,7 @@
             var datasets = []
 
             for (var i = 0; i < countries.length; i++) {
-                colors[i] = colors[i] || getRandomColor()
+                colors[i] = colors[i] || countryColor[i] || (countryColor[i] = getRandomColor());
                 datasets.push(
                     {
                         label: countries[i],
@@ -493,6 +497,7 @@
             cconfig.data.datasets = getDatasets(data, getInfected, countries, false)
             cconfig.data.labels = labels
             makeChart("recovery", cconfig)
+
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -501,6 +506,13 @@
             charts["_dummy"] = 1 // force non-filled style
         }
         refresh()
+
+
+        setInterval(async function() {
+            console.log("Refeshing with latest data...", new Date());
+            Chart.defaults.global.animation.duration = 0;
+            await refresh();
+        }, 60000*15);
     </script>
 </body>
 
