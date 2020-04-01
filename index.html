@@ -81,6 +81,9 @@
     <div class="card mt-3">
         <div class="card-body">
             <canvas id="confirmed"></canvas>
+            <hr>
+            <canvas id="confirmed-logarithmic"></canvas>
+
             This is still pretty useless as the countries differ in total population and population density, lets
             turn to
             something
@@ -422,6 +425,17 @@
             charts[name] = new Chart(canvas, config)
         }
 
+        function logTickCallback(value, index, values) {
+            if (value === 1000000) return "1M";
+            if (value === 100000) return "100K";
+            if (value === 10000) return "10K";
+            if (value === 1000) return "1K";
+            if (value === 100) return "100";
+            if (value === 10) return "10";
+            if (value === 0) return "0";
+            return null;
+        }
+
         async function refresh() {
             var countries_str = document.getElementById('countries').value
             var countries = countries_str.split(";").map(e => e.trim())
@@ -455,6 +469,21 @@
             cconfig.data.datasets = getDatasets(data, getDays, countries, false)
             cconfig.data.labels = labels
             makeChart("confirmed", cconfig)
+
+            cconfig = JSON.parse(JSON.stringify(config))
+            cconfig.options.title.text = 'Corona Confirmed Comparison (Logarithmic)'
+            cconfig.options.scales.yAxes[0].scaleLabel.labelString = "confirmed"
+            // Extremely sad. We need to go to a log scale because the US numbers
+            // are increasing exponentially
+            cconfig.options.scales.yAxes[0].type = 'logarithmic'
+            cconfig.options.scales.yAxes[0].ticks = {
+                min: 0,
+                max: 1000000,
+                callback: logTickCallback
+            }
+            cconfig.data.datasets = getDatasets(data, getDays, countries, false)
+            cconfig.data.labels = labels
+            makeChart("confirmed-logarithmic", cconfig)
 
             cconfig = JSON.parse(JSON.stringify(config))
             cconfig.options.title.text = 'Corona infection rate comparison'
@@ -494,16 +523,7 @@
             cconfig.options.scales.yAxes[0].ticks = {
                 min: 0,
                 max: 1000,
-                callback: function (value, index, values) {
-                    if (value === 1000000) return "1M";
-                    if (value === 100000) return "100K";
-                    if (value === 10000) return "10K";
-                    if (value === 1000) return "1K";
-                    if (value === 100) return "100";
-                    if (value === 10) return "10";
-                    if (value === 0) return "0";
-                    return null;
-                }
+                callback: logTickCallback
             }
             cconfig.data.datasets = getDatasets(data, getDeadPerMillion, countries, false)
             cconfig.data.labels = labels

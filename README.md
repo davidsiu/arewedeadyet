@@ -27,6 +27,7 @@ $ npm test
 - Switched to a near Real-time datasource [davidsiu/covid-19-realtime-data](https://github.com/davidsiu/covid-19-realtime-data)
 - Added 15-minute Auto-refreshing
 - Added Recoveries / Time
+- Added Confirmed / Time Logarithmic
 
 ## Roadmap
 
